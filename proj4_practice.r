@@ -11,15 +11,16 @@ newt <- function(theta,func, grad, hess=NULL,...,tol=1e-8,fscale=1,maxit=100,max
   if ( FALSE %in% is.finite(func(theta,...)) | FALSE %in% is.finite(grad(theta,...)) | (if(is.null(hess) == FALSE){FALSE %in% is.finite(hess(theta,...))}else{FALSE})){
     warning('The objective or derivatives are not finite at the initial theta!')
   }
-  iter = 0
+  iter = 0                                    # define iteration
+  # go through 'maxit' Newton iterations to find the minimum
   for (w in 1:maxit){
     
-    nll0 <- func(theta,...)
-    grad0 <- grad(theta,...)
-    
+    nll0 <- func(theta,...)                   # the initial value of objective function - nll0
+    grad0 <- grad(theta,...)                  # the initial gradient vector - grad0
+    # if hessian is not provided
     if (is.null(hess) == TRUE){
-      hess0 <- matrix(0,2,2)
-      for (i in 1:length(theta)){
+      hess0 <- matrix(0,2,2)                  
+      for (i in 1:length(theta)){             # for each element in 'theta' vector
         theta_c <- theta
         theta_c[i] <- theta_c[i] + eps
         grad_c <- grad(theta_c,...)
