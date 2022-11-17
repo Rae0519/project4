@@ -35,7 +35,7 @@ hb <- function(th,k=2) {    # hessian function
   h
 }
 
-#installed.packages(priority="recommended")
+# installed.packages(priority="recommended")
 # The function is to implement Newton’s method for minimization of functions
 # Input containing: initial values for the optimization parameters(theta), objective function to minimize(func), gradient function(grad),
 # Hessian matrix function(hess), convergence tolerance(tol), a rough estimate of the magnitude of func near the optimum(fscale), 
@@ -48,13 +48,13 @@ newt <- function(theta,func,grad,hess=NULL,...,tol=1e-8,fscale=1,maxit=100,max.h
   if ( FALSE %in% is.finite(func(theta,...)) | FALSE %in% is.finite(grad(theta,...)) | FALSE %in% is.finite(hess(theta,...))){
     warning('the objective or derivatives are not finite at the initial theta')
   }
-  iter = 0
-  for (k in 1:maxit){
-    
-    nll0 <- func(th = theta,...)
-    grad0 <- grad(th = theta,...)
-    if (hess = NULL){
-      hess0 <- matrix(0,2,2)
+  iter = 0             # define iteration
+  # 'maxit' Newton iterations at most
+  for (k in 1:maxit){     
+    nll0 <- func(th = theta,...)            # the initial function - nll0
+    grad0 <- grad(th = theta,...)           # the initial gradient function - grad0
+    if (hess = NULL){                       # if hessian is not provided
+      hess0 <- matrix(0,2,2)                # 
       for (i in 1:length(theta)){
         theta_c <- theta
         theta_c[i] <- theta_c[i] + eps
