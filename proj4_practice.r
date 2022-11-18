@@ -3,7 +3,7 @@
 newt <- function(theta,func, grad, hess=NULL,...,tol=1e-8,fscale=1,maxit=100,max.half=20,eps=1e-6){
   # judge if the objective or derivatives are finite at the initial theta
   if ( FALSE %in% is.finite(func(theta,...)) | FALSE %in% is.finite(grad(theta,...)) | (if(is.null(hess) == FALSE){FALSE %in% is.finite(hess(theta,...))}else{FALSE})){
-    warning('The objective or derivatives are not finite at the initial theta!')
+    stop('The objective or derivatives are not finite at the initial theta!')
   }
   iter = 0
   m <- length(theta)
@@ -48,7 +48,7 @@ newt <- function(theta,func, grad, hess=NULL,...,tol=1e-8,fscale=1,maxit=100,max
       }
     }
     if (count == max.half + 1){
-      warning('The step fails to reduce the objective despite trying max.half step halvings!')
+      stop('The step fails to reduce the objective despite trying max.half step halvings!')
     } 
     
     iter = iter + 1
@@ -63,7 +63,7 @@ newt <- function(theta,func, grad, hess=NULL,...,tol=1e-8,fscale=1,maxit=100,max
     }
   }
   
-  list(f = nll0 ,theta = theta, iter = iter, g = grad0, Hi = chol2inv(chol(hess0)))
+  list(f = func(theta,...) ,theta = theta, iter = iter, g = grad(theta,...), Hi = chol2inv(chol(hess(theta,...))))
 } 
 
 
@@ -88,8 +88,13 @@ newt <- function(theta,func, grad, hess=NULL,...,tol=1e-8,fscale=1,maxit=100,max
 # 
 theta = c( 1.3, 0.4)
 length(theta)
-# newt(theta, rb, gb)
-
-
-
+newt(theta, rb, gb)
+count = 0
+for ( i in 1:10){
+  count = count + 2
+  if (count > 5){
+    stop("count larger than 5")
+  }
+}
+count
 
