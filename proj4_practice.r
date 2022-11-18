@@ -1,26 +1,20 @@
 
-# The function is to implement Newton’s method for minimization of functions
-# Input containing: initial values for the optimization parameters(theta), objective function to minimize(func), gradient function(grad),
-# Hessian matrix function(hess), convergence tolerance(tol), a rough estimate of the magnitude of func near the optimum(fscale), 
-# maximum number of Newton iterations(maxit), maximum number of times a step should be halved(max.half), finite difference intervals(eps)
-# Output containing: the minimum value of the objective function(f), the minimum value of the parameters(theta),
-# the number of iterations taken to reach the minimum(iter), gradient vector at the minimum(g), the inverse of the Hessian matrix at the minimum(Hi)
 
 newt <- function(theta,func, grad, hess=NULL,...,tol=1e-8,fscale=1,maxit=100,max.half=20,eps=1e-6){
   # judge if the objective or derivatives are finite at the initial theta
   if ( FALSE %in% is.finite(func(theta,...)) | FALSE %in% is.finite(grad(theta,...)) | (if(is.null(hess) == FALSE){FALSE %in% is.finite(hess(theta,...))}else{FALSE})){
     warning('The objective or derivatives are not finite at the initial theta!')
   }
-  iter = 0                                    # define iteration
-  # go through 'maxit' Newton iterations to find the minimum
+  iter = 0
+  m <- length(theta)
   for (w in 1:maxit){
     
-    nll0 <- func(theta,...)                   # the initial value of objective function - nll0
-    grad0 <- grad(theta,...)                  # the initial gradient vector - grad0
-    # if hessian is not provided
+    nll0 <- func(theta,...)
+    grad0 <- grad(theta,...)
+    
     if (is.null(hess) == TRUE){
-      hess0 <- matrix(0,2,2)                  
-      for (i in 1:length(theta)){             # for each element in 'theta' vector
+      hess0 <- matrix(0,m,m)
+      for (i in 1:length(theta)){
         theta_c <- theta
         theta_c[i] <- theta_c[i] + eps
         grad_c <- grad(theta_c,...)
@@ -31,14 +25,15 @@ newt <- function(theta,func, grad, hess=NULL,...,tol=1e-8,fscale=1,maxit=100,max
       hess0 <- hess(theta,...)
     }
    
-    if (all(grad0 == 0) & all(eigen(hess0)$values >= 0)){
-     break
-    }
-   
     if (all(class(try(chol(hess0))) == 'try-error')){
       hess0 <- (t(hess0) + hess0)/2
     }
-    
+    else{
+      if (all(grad0 == 0)){
+        break
+      }
+    }
+
     delta = -chol2inv(chol(hess0))%*% grad0
     count = 0
     for (i in 1:(max.half+1)) {
@@ -91,7 +86,8 @@ newt <- function(theta,func, grad, hess=NULL,...,tol=1e-8,fscale=1,maxit=100,max
 #   h
 # }
 # 
-# theta = c( 1.3, 0.4)
+theta = c( 1.3, 0.4)
+length(theta)
 # newt(theta, rb, gb)
 
 
